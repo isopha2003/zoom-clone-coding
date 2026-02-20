@@ -19,15 +19,17 @@ const wss = new WebSocket.Server({server});
 // server 라는 변수에 HTTP와 WebSocket이 모두 담겨 있음
 // 이렇게 하면 3000번 포트 하나로 웹 사이트 접속(HTTP)과 실시간 통신(WS)을 동시에 할 수 있음
 
+const sockets = [];
+
 wss.on("connection", (socket) => {
+    sockets.push(socket);
     console.log("Connected to Browser");
     socket.on("close", () => {
         console.log("Disconnected from the Browser");
     });
     socket.on("message", (message) => {
-        console.log(message.toString("utf-8"));
-    })
-    socket.send("hello");
+        sockets.forEach(aSocket => aSocket.send(message.toString("utf-8")));
+    });
 });
 // 새로운 클라이언트가 웹소켓 연결을 시도해서 성공하면 함수를 실행
 
